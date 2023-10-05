@@ -46,3 +46,20 @@ export const POST: RequestHandler = async (event) => {
   response.headers.append('Access-Control-Allow-Origin', "*");
   return response;
 }
+
+export const OPTIONS: RequestHandler = async (event) => {
+  let params = createMap(event.url.searchParams.entries());
+  let headers = createMap(event.request.headers.entries());
+  let body = await event.request.text();
+  let response =  json({
+    params,
+    headers,
+    path: event.url.pathname,
+    body,
+    url: event.url.toString()
+  })
+  response.headers.append('Access-Control-Allow-Origin', "*");
+  response.headers.append('Access-Control-Request-Method', '*')
+  response.headers.append('Access-Control-Request-Headers', '*')
+  return response;
+}
