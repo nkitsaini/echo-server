@@ -19,9 +19,19 @@ function createMap(values: IterableIterator<[string, string]>): { [key: string]:
   return params;
 }
 
+function removeCFHeaders(headers: Headers): Headers {
+  let result = new Headers();
+  for (const [key, value] of headers.entries()) {
+    if (!key.startsWith("cf-")) {
+      result.append(key, value);
+    }
+  }
+  return result;
+}
+
 export const GET: RequestHandler = async (event) => {
   let params = createMap(event.url.searchParams.entries());
-  let headers = createMap(event.request.headers.entries());
+  let headers = createMap(removeCFHeaders(event.request.headers).entries());
   let response = json({
     params,
     headers,
@@ -34,7 +44,7 @@ export const GET: RequestHandler = async (event) => {
 
 export const POST: RequestHandler = async (event) => {
   let params = createMap(event.url.searchParams.entries());
-  let headers = createMap(event.request.headers.entries());
+  let headers = createMap(removeCFHeaders(event.request.headers).entries());
   let body = await event.request.text();
   let response = json({
     params,
